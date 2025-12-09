@@ -1294,101 +1294,145 @@
         }
         
         function updateCharts(transactions) {
-            // Group by category
-            const categoryData = {};
-            transactions.forEach(t => {
-                if(t.amount > 0) { // Only count expenses, not returns
-                    categoryData[t.category] = (categoryData[t.category] || 0) + t.amount;
+            console.log('updateCharts вызвана с', transactions.length, 'транзакциями');
+    
+            try {
+                // 1. Проверяем существование canvas элементов
+                const pieCanvas = document.getElementById('pieChart');
+                const lineCanvas = document.getElementById('lineChart');
+        
+                if (!pieCanvas) {
+                    console.error('Элемент pieChart не найден!');
+                    return;
                 }
-            });
-            
-            // Pie Chart
-            const pieCtx = document.getElementById('pieChart').getContext('2d');
-            if(window.pieChart) window.pieChart.destroy();
-            
-            window.pieChart = new Chart(pieCtx, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(categoryData),
-                    datasets: [{
-                        data: Object.values(categoryData),
-                        backgroundColor: Object.keys(categoryData).map(getCategoryColor),
-                        borderWidth: 2,
-                        borderColor: '#0a0e17'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#ffffff',
-                                font: {
-                                    family: 'Exo 2'
+        
+                if (!lineCanvas) {
+                    console.error('Элемент lineChart не найден!');
+                    return;
+                }
+        
+                // 2. Проверяем загружен ли Chart.js
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js не загружен!');
+                    return;
+                }
+        
+                // 3. Group by category для круговой диаграммы
+                const categoryData = {};
+                transactions.forEach(t => {
+                    if(t.amount > 0) { // Only count expenses, not returns
+                        categoryData[t.category] = (categoryData[t.category] || 0) + t.amount;
+                    }
+                });
+        
+                console.log('Данные для диаграммы:', categoryData);
+                
+                // 4. Pie Chart - только если есть данные
+                if (Object.keys(categoryData).length > 0) {
+                    if(window.pieChart) {
+                        // Обновляем существующую диаграмму
+                        window.pieChart.data.labels = Object.keys(categoryData);
+                        window.pieChart.data.datasets[0].data = Object.values(categoryData);
+                        window.pieChart.data.datasets[0].backgroundColor = Object.keys(categoryData).map(getCategoryColor);
+                        window.pieChart.update();
+                        console.log('Круговая диаграмма обновлена');
+                    } else {
+                        // Создаем новую диаграмму
+                        const pieCtx = pieCanvas.getContext('2d');
+                        window.pieChart = new Chart(pieCtx, {
+                            type: 'pie',
+                            data: {
+                                labels: Object.keys(categoryData),
+                                datasets: [{
+                                    data: Object.values(categoryData),
+                                    backgroundColor: Object.keys(categoryData).map(getCategoryColor),
+                                    borderWidth: 2,
+                                    borderColor: '#0a0e17'
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        labels: {
+                                            color: '#ffffff',
+                                            font: {
+                                                family: 'Exo 2'
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        console.log('Круговая диаграмма создана');
+                    }
+                }
+        
+                // 5. Line Chart - упрощенные данные
+                if (window.lineChart) {
+                    window.lineChart.destroy();
+                }
+        
+                const lineCtx = lineCanvas.getContext('2d');
+                const dates = [];
+                const amounts = [];
+        
+                // Генерируем простые тестовые данные
+                for(let i = 9; i >= 0; i--) {
+                    dates.push(`День ${10 - i}`);
+                    amounts.push(Math.floor(Math.random() * 50000) + 20000);
+                }
+        
+                window.lineChart = new Chart(lineCtx, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Расходы, ₽',
+                            data: amounts,
+                            borderColor: '#00d4ff',
+                            backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#ffffff'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                },
+                                ticks: {
+                                    color: '#ffffff'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                },
+                                ticks: {
+                                    color: '#ffffff'
                                 }
                             }
                         }
                     }
-                }
-            });
-            
-            // Line Chart (simplified)
-            const lineCtx = document.getElementById('lineChart').getContext('2d');
-            if(window.lineChart) window.lineChart.destroy();
-            
-            // Generate dates for last 30 days
-            const dates = [];
-            const amounts = [];
-            for(let i = 29; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                dates.push(date.toLocaleDateString('ru-RU', {day: '2-digit', month: 'short'}));
-                amounts.push(Math.floor(Math.random() * 50000) + 10000);
+                });
+        
+                console.log('Линейная диаграмма создана');
+        
+            } catch (error) {
+                console.error('Ошибка в updateCharts:', error);
+                console.error('Stack trace:', error.stack);
             }
-            
-            window.lineChart = new Chart(lineCtx, {
-                type: 'line',
-                data: {
-                    labels: dates,
-                    datasets: [{
-                        label: 'Расходы, ₽',
-                        data: amounts,
-                        borderColor: '#00d4ff',
-                        backgroundColor: 'rgba(0, 212, 255, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#ffffff'
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            grid: {
-                                color: 'rgba(255,255,255,0.1)'
-                            },
-                            ticks: {
-                                color: '#ffffff'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                color: 'rgba(255,255,255,0.1)'
-                            },
-                            ticks: {
-                                color: '#ffffff'
-                            }
-                        }
-                    }
-                }
-            });
         }
         
         function exportReport() {
