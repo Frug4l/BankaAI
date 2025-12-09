@@ -501,6 +501,28 @@
             margin-bottom: 15px;
             color: var(--primary);
         }
+
+        /* ФИКС для canvas элементов */
+        #pieChart, #lineChart {
+            width: 100% !important;
+            height: 300px !important;
+            min-height: 300px;
+            display: block !important;
+        }
+        
+        .chart-container {
+            min-height: 350px;
+            position: relative;
+        }
+        
+        .chart-container canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        /* ========== КОНЕЦ ДОБАВЛЕНИЯ ========== */
         
         /* Transactions Table */
         .transactions-table {
