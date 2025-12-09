@@ -558,6 +558,18 @@
             z-index: 1000;
             display: none;
         }
+
+        .dashboard.active {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            animation: fadeIn 0.5s ease-out !important;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         
         .loading-overlay.active {
             display: flex;
@@ -1100,20 +1112,19 @@
         
         function processFile(file) {
             showLoading('AI анализирует файл...');
-            
+    
             setTimeout(() => {
                 hideLoading();
-                
-                // Simulate file processing
+        
                 const fileName = file.name;
                 addMessage(`✅ Файл "${fileName}" успешно загружен! AI начинает анализ...`, true);
-                
-                // Show demo analysis
+        
+                // ВАЖНО: Убираем лишний setTimeout и сразу вызываем демо-данные
                 setTimeout(() => {
                     generateDemoData();
                     addMessage('Анализ завершен! Вот результаты:', true);
-                }, 1000);
-            }, 3000);
+                }, 500); // Уменьшаем до 500мс
+            }, 1500); // Уменьшаем до 1.5 секунд вместо 3
         }
         
         function downloadSampleFile() {
@@ -1149,41 +1160,51 @@
         // Demo Data Generation
         // ====================
         function generateDemoData() {
-            console.log('=== ДЕМО АНАЛИЗ НАЧАТ ===');
+            console.log('=== НАЧАЛО ДЕМО АНАЛИЗА ===');
     
-            // 1. Показываем загрузку
-            showLoading('AI анализирует данные...');
+            // 1. Сначала скрываем загрузку если она есть
+            hideLoading();
     
-            // 2. Сразу обновляем интерфейс
-            requestAnimationFrame(() => {
-                const transactions = [
-                    { date: '2024-01-15', description: 'Аренда офиса', amount: 50000, category: 'Аренда', confidence: 0.98, status: 'Норма' },
-                    { date: '2024-01-16', description: 'Зарплата сотрудников', amount: 150000, category: 'Зарплата', confidence: 0.99, status: 'Норма' },
-                    { date: '2024-01-17', description: 'Налог УСН', amount: 25000, category: 'Налоги', confidence: 0.97, status: 'Норма' },
-                    { date: '2024-01-18', description: 'Реклама Яндекс.Директ', amount: 30000, category: 'Маркетинг', confidence: 0.95, status: 'Норма' },
-                    { date: '2024-01-19', description: 'Закупка товаров', amount: 80000, category: 'Закупки', confidence: 0.96, status: 'Внимание' }
-                ];
-        
-                console.log('Данные созданы, обновляю интерфейс');
-        
-                // 3. Обновляем дашборд
-                try {
-                    updateDashboard(transactions);
-                } catch (error) {
-                    console.error('Ошибка в updateDashboard:', error);
-                }
-        
-                // 4. Показываем дашборд
-                dashboard.classList.add('active');
-        
-                // 5. Скрываем загрузку (гарантированно через 100мс)
-                setTimeout(() => {
-                    console.log('Скрываю загрузку...');
-                    hideLoading();
-                }, 100);
-        
-                console.log('=== ДЕМО АНАЛИЗ ЗАВЕРШЕН ===');
-            });
+            // 2. Показываем дашборд СРАЗУ
+            const dashboard = document.getElementById('dashboard');
+            dashboard.style.display = 'block';
+            dashboard.classList.add('active');
+            dashboard.style.opacity = '1';
+    
+            // 3. Готовим данные
+            const transactions = [
+                { date: '2024-01-15', description: 'Аренда офиса', amount: 50000, category: 'Аренда', confidence: 0.98, status: 'Норма' },
+                { date: '2024-01-16', description: 'Зарплата сотрудников', amount: 150000, category: 'Зарплата', confidence: 0.99, status: 'Норма' },
+                { date: '2024-01-17', description: 'Налог УСН', amount: 25000, category: 'Налоги', confidence: 0.97, status: 'Норма' },
+                { date: '2024-01-18', description: 'Реклама Яндекс.Директ', amount: 30000, category: 'Маркетинг', confidence: 0.95, status: 'Норма' },
+                { date: '2024-01-19', description: 'Закупка товаров', amount: 80000, category: 'Закупки', confidence: 0.96, status: 'Внимание' },
+                { date: '2024-01-20', description: 'Услуги интернет', amount: 5000, category: 'Услуги', confidence: 0.94, status: 'Норма' },
+                { date: '2024-01-21', description: 'Бензин АЗС', amount: 10000, category: 'Транспорт', confidence: 0.92, status: 'Норма' },
+                { date: '2024-01-22', description: 'Возврат от клиента', amount: -15000, category: 'Возврат', confidence: 0.98, status: 'Норма' },
+                { date: '2024-01-23', description: 'Ремонт офиса', amount: 20000, category: 'Ремонт', confidence: 0.91, status: 'Норма' },
+                { date: '2024-01-25', description: 'Налог на прибыль', amount: 45000, category: 'Налоги', confidence: 0.97, status: 'Норма' }
+            ];
+    
+            console.log('Данные готовы, обновляю дашборд...');
+    
+            // 4. Обновляем дашборд
+             try {
+                updateDashboard(transactions);
+                console.log('Дашборд обновлен');
+            } catch (error) {
+                console.error('Ошибка обновления дашборда:', error);
+            }
+    
+            // 5. Прокрутка к дашборду
+            setTimeout(() => {
+                dashboard.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                console.log('Прокрутка к дашборду выполнена');
+            }, 300);
+    
+            console.log('=== ДЕМО АНАЛИЗ ЗАВЕРШЕН ===');
         }
         
         // ====================
@@ -1429,13 +1450,52 @@
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+
+
+            
         });
-    </script>
-    <div style="position: fixed; bottom: 10px; right: 10px; z-index: 10001;">
-    <button onclick="document.querySelector('.loading-overlay').style.display='none'; console.log('Загрузка принудительно скрыта')" 
-            style="background: red; color: white; padding: 10px; border-radius: 5px;">
-        Скрыть загрузку
-    </button>
-    </div>
-</body>
-</html>
+
+        </script>
+
+        <!-- ========== КНОПКИ ДЛЯ ОТЛАДКИ ========== -->
+        <div style="position: fixed; bottom: 60px; right: 10px; z-index: 10001; display: flex; flex-direction: column; gap: 8px;">
+            <button onclick="forceShowDashboard()" style="background: #00d4ff; color: black; padding: 10px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold;">
+                📊 Показать дашборд
+            </button>
+            <button onclick="forceHideLoading()" style="background: red; color: white; padding: 10px; border-radius: 5px; border: none; cursor: pointer;">
+                🔧 Скрыть загрузку
+            </button>
+        </div>
+
+        <script>
+        function forceShowDashboard() {
+            const dashboard = document.getElementById('dashboard');
+            dashboard.style.display = 'block';
+            dashboard.classList.add('active');
+    
+            // Тестовые данные
+            const testData = [
+                { date: '2024-01-15', description: 'Тест', amount: 1000, category: 'Тест', confidence: 0.95, status: 'Норма' }
+            ];
+    
+            // Вызовем вашу функцию updateDashboard если она есть
+            if (window.updateDashboard) {
+                updateDashboard(testData);
+            }
+    
+            // Прокрутим к дашборду
+            dashboard.scrollIntoView({behavior: 'smooth'});
+    
+            console.log('Дашборд показан принудительно');
+            alert('Дашборд показан! Проверьте, видите ли вы таблицу и графики.');
+        }
+
+        function forceHideLoading() {
+            document.querySelector('.loading-overlay').style.display = 'none';
+            console.log('Загрузка скрыта');
+        }
+        </script>
+
+        </body>
+
+        </html>
