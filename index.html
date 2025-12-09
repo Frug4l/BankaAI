@@ -1127,31 +1127,32 @@
         // Demo Data Generation
         // ====================
         function generateDemoData() {
-            showLoading('AI генерирует демо-анализ...');
-            
+            showLoading('AI анализирует данные...');
+    
+    // Убираем долгую задержку - начинаем сразу
+            const transactions = [
+                { date: '2024-01-15', description: 'Аренда офиса', amount: 50000, category: 'Аренда', confidence: 0.98, status: 'Норма' },
+                { date: '2024-01-16', description: 'Зарплата сотрудников', amount: 150000, category: 'Зарплата', confidence: 0.99, status: 'Норма' },
+                { date: '2024-01-17', description: 'Налог УСН', amount: 25000, category: 'Налоги', confidence: 0.97, status: 'Норма' },
+                { date: '2024-01-18', description: 'Реклама Яндекс.Директ', amount: 30000, category: 'Маркетинг', confidence: 0.95, status: 'Норма' },
+                { date: '2024-01-19', description: 'Закупка товаров', amount: 80000, category: 'Закупки', confidence: 0.96, status: 'Внимание' },
+                { date: '2024-01-20', description: 'Услуги интернет', amount: 5000, category: 'Услуги', confidence: 0.94, status: 'Норма' },
+                { date: '2024-01-21', description: 'Бензин АЗС', amount: 10000, category: 'Транспорт', confidence: 0.92, status: 'Норма' },
+                { date: '2024-01-22', description: 'Возврат от клиента', amount: -15000, category: 'Возврат', confidence: 0.98, status: 'Норма' },
+                { date: '2024-01-23', description: 'Ремонт офиса', amount: 20000, category: 'Ремонт', confidence: 0.91, status: 'Норма' },
+                { date: '2024-01-25', description: 'Налог на прибыль', amount: 45000, category: 'Налоги', confidence: 0.97, status: 'Норма' }
+            ];
+    
+            updateDashboard(transactions);
+            hideLoading();
+            dashboard.classList.add('active');
+    
+            // Плавный скролл
             setTimeout(() => {
-                // Sample data
-                const transactions = [
-                    { date: '2024-01-15', description: 'Аренда офиса', amount: 50000, category: 'Аренда', confidence: 0.98, status: 'Норма' },
-                    { date: '2024-01-16', description: 'Зарплата сотрудников', amount: 150000, category: 'Зарплата', confidence: 0.99, status: 'Норма' },
-                    { date: '2024-01-17', description: 'Налог УСН', amount: 25000, category: 'Налоги', confidence: 0.97, status: 'Норма' },
-                    { date: '2024-01-18', description: 'Реклама Яндекс.Директ', amount: 30000, category: 'Маркетинг', confidence: 0.95, status: 'Норма' },
-                    { date: '2024-01-19', description: 'Закупка товаров', amount: 80000, category: 'Закупки', confidence: 0.96, status: 'Внимание' },
-                    { date: '2024-01-20', description: 'Услуги интернет', amount: 5000, category: 'Услуги', confidence: 0.94, status: 'Норма' },
-                    { date: '2024-01-21', description: 'Бензин АЗС', amount: 10000, category: 'Транспорт', confidence: 0.92, status: 'Норма' },
-                    { date: '2024-01-22', description: 'Возврат от клиента', amount: -15000, category: 'Возврат', confidence: 0.98, status: 'Норма' },
-                    { date: '2024-01-23', description: 'Ремонт офиса', amount: 20000, category: 'Ремонт', confidence: 0.91, status: 'Норма' },
-                    { date: '2024-01-25', description: 'Налог на прибыль', amount: 45000, category: 'Налоги', confidence: 0.97, status: 'Норма' }
-                ];
-                
-                updateDashboard(transactions);
-                hideLoading();
-                dashboard.classList.add('active');
-                
-                // Scroll to dashboard
                 dashboard.scrollIntoView({ behavior: 'smooth' });
-            }, 2000);
+            }, 100);
         }
+}
         
         // ====================
         // Dashboard Functions
