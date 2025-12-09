@@ -999,13 +999,35 @@
             return 'Я понимаю ваш вопрос! Чтобы дать точный ответ, мне нужно проанализировать ваши финансовые данные. Загрузите банковскую выписку, и я предоставлю детальный анализ. 📁';
         }
         
+        // ====================
+        // Loading Functions (FIXED)
+        // ====================
         function showLoading(text) {
+            console.log('Показываю загрузку:', text);
             thinkingText.textContent = text;
+            loadingOverlay.style.display = 'flex';
             loadingOverlay.classList.add('active');
+    
+            // Гарантируем видимость
+            loadingOverlay.style.opacity = '1';
+            loadingOverlay.style.zIndex = '10000';
         }
-        
+
         function hideLoading() {
-            loadingOverlay.classList.remove('active');
+            console.log('Скрываю загрузку');
+    
+            // Анимация исчезновения
+            loadingOverlay.style.opacity = '0';
+            loadingOverlay.style.transition = 'opacity 0.3s ease';
+    
+            // Через 300мс скрываем полностью
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+                loadingOverlay.classList.remove('active');
+                loadingOverlay.style.opacity = '';
+                loadingOverlay.style.transition = '';
+                loadingOverlay.style.zIndex = '';
+            }, 300);
         }
         
         function sendMessage() {
@@ -1127,36 +1149,41 @@
         // Demo Data Generation
         // ====================
         function generateDemoData() {
-            // Прячем кнопки на время обработки
-            document.body.style.pointerEvents = 'none';
+            console.log('=== ДЕМО АНАЛИЗ НАЧАТ ===');
+    
+            // 1. Показываем загрузку
             showLoading('AI анализирует данные...');
     
-            // Минимальная задержка для UX
-            setTimeout(() => {
+            // 2. Сразу обновляем интерфейс
+            requestAnimationFrame(() => {
                 const transactions = [
                     { date: '2024-01-15', description: 'Аренда офиса', amount: 50000, category: 'Аренда', confidence: 0.98, status: 'Норма' },
                     { date: '2024-01-16', description: 'Зарплата сотрудников', amount: 150000, category: 'Зарплата', confidence: 0.99, status: 'Норма' },
                     { date: '2024-01-17', description: 'Налог УСН', amount: 25000, category: 'Налоги', confidence: 0.97, status: 'Норма' },
                     { date: '2024-01-18', description: 'Реклама Яндекс.Директ', amount: 30000, category: 'Маркетинг', confidence: 0.95, status: 'Норма' },
-                    { date: '2024-01-19', description: 'Закупка товаров', amount: 80000, category: 'Закупки', confidence: 0.96, status: 'Внимание' },
-                    { date: '2024-01-20', description: 'Услуги интернет', amount: 5000, category: 'Услуги', confidence: 0.94, status: 'Норма' },
-                    { date: '2024-01-21', description: 'Бензин АЗС', amount: 10000, category: 'Транспорт', confidence: 0.92, status: 'Норма' },
-                    { date: '2024-01-22', description: 'Возврат от клиента', amount: -15000, category: 'Возврат', confidence: 0.98, status: 'Норма' },
-                    { date: '2024-01-23', description: 'Ремонт офиса', amount: 20000, category: 'Ремонт', confidence: 0.91, status: 'Норма' },
-                    { date: '2024-01-25', description: 'Налог на прибыль', amount: 45000, category: 'Налоги', confidence: 0.97, status: 'Норма' }
+                    { date: '2024-01-19', description: 'Закупка товаров', amount: 80000, category: 'Закупки', confidence: 0.96, status: 'Внимание' }
                 ];
         
-                updateDashboard(transactions);
-                dashboard.classList.add('active');
-                hideLoading();
+                console.log('Данные созданы, обновляю интерфейс');
         
-                // Восстанавливаем кликабельность
+                // 3. Обновляем дашборд
+                try {
+                    updateDashboard(transactions);
+                } catch (error) {
+                    console.error('Ошибка в updateDashboard:', error);
+                }
+        
+                // 4. Показываем дашборд
+                dashboard.classList.add('active');
+        
+                // 5. Скрываем загрузку (гарантированно через 100мс)
                 setTimeout(() => {
-                    document.body.style.pointerEvents = 'auto';
-                    dashboard.scrollIntoView({ behavior: 'smooth' });
+                    console.log('Скрываю загрузку...');
+                    hideLoading();
                 }, 100);
         
-            }, 100); // Всего 0.1 секунда задержки
+                console.log('=== ДЕМО АНАЛИЗ ЗАВЕРШЕН ===');
+            });
         }
         
         // ====================
@@ -1404,5 +1431,11 @@
             canvas.height = window.innerHeight;
         });
     </script>
+    <div style="position: fixed; bottom: 10px; right: 10px; z-index: 10001;">
+    <button onclick="document.querySelector('.loading-overlay').style.display='none'; console.log('Загрузка принудительно скрыта')" 
+            style="background: red; color: white; padding: 10px; border-radius: 5px;">
+        Скрыть загрузку
+    </button>
+    </div>
 </body>
 </html>
