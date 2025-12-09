@@ -1210,6 +1210,9 @@
         // ====================
         // Dashboard Functions
         // ====================
+
+
+        
         function updateDashboard(transactions) {
             // Calculate statistics
             const totalAmount = transactions.reduce((sum, t) => sum + t.amount, 0);
@@ -1469,25 +1472,33 @@
 
         <script>
         function forceShowDashboard() {
+            console.log('=== ПОКАЗ ДАШБОРДА С ПОЛНЫМИ ДАННЫМИ ===');
+    
             const dashboard = document.getElementById('dashboard');
             dashboard.style.display = 'block';
             dashboard.classList.add('active');
     
-            // Тестовые данные
+            // ПОЛНЫЕ тестовые данные (как в демо)
             const testData = [
-                { date: '2024-01-15', description: 'Тест', amount: 1000, category: 'Тест', confidence: 0.95, status: 'Норма' }
+                { date: '2024-01-15', description: 'Аренда офиса', amount: 50000, category: 'Аренда', confidence: 0.98, status: 'Норма' },
+                { date: '2024-01-16', description: 'Зарплата сотрудников', amount: 150000, category: 'Зарплата', confidence: 0.99, status: 'Норма' },
+                { date: '2024-01-17', description: 'Налог УСН', amount: 25000, category: 'Налоги', confidence: 0.97, status: 'Норма' },
+                { date: '2024-01-18', description: 'Реклама Яндекс.Директ', amount: 30000, category: 'Маркетинг', confidence: 0.95, status: 'Норма' },
+                { date: '2024-01-19', description: 'Закупка товаров', amount: 80000, category: 'Закупки', confidence: 0.96, status: 'Внимание' }
             ];
     
-            // Вызовем вашу функцию updateDashboard если она есть
+            // Вызываем updateDashboard с полными данными
             if (window.updateDashboard) {
                 updateDashboard(testData);
+                console.log('✅ Дашборд обновлен с полными данными');
+            } else {
+                console.error('❌ Функция updateDashboard не найдена!');
             }
     
             // Прокрутим к дашборду
             dashboard.scrollIntoView({behavior: 'smooth'});
     
-            console.log('Дашборд показан принудительно');
-            alert('Дашборд показан! Проверьте, видите ли вы таблицу и графики.');
+            console.log('✅ Дашборд полностью показан');
         }
 
         function forceHideLoading() {
